@@ -1,5 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
+  <!-- Force our version of ResolveNuGetPackageAssets until https://github.com/NuGet/Home/issues/7661 is solved -->
+  <UsingTask TaskName="Microsoft.NuGet.Build.Tasks.ResolveNuGetPackageAssets" AssemblyFile="Xenko.ResolveNuGetAssemblies.dll" Condition="'$(XenkoPlatform)' == 'UWP' Or '$(XenkoPlatform)' == 'Android' Or '$(XenkoPlatform)' == 'iOS'" />
+
   <!-- Support for TargetFramework xamarinios10 -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'xamarinios10' ">
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>

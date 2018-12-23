@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <XenkoRuntime>true</XenkoRuntime>
   </PropertyGroup>
@@ -59,6 +59,7 @@
     <None Include="build\**\*.targets" PackagePath="build\" Pack="true" />
     <None Include="build\**\*.props" PackagePath="build\" Pack="true" />
     <None Include="..\..\..\deps\AssemblyProcessor\*.*" PackagePath="tools\AssemblyProcessor\" Pack="true" />
+    <None Include="..\..\..\deps\Xenko.ResolveNuGetAssemblies\bin\Debug\net461\*.*" PackagePath="build\" Pack="true" />
   </ItemGroup>
   
   <ItemGroup>

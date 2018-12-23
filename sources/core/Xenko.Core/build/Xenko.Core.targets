@@ -48,11 +48,21 @@
     <XenkoPlatform Condition="'$(XenkoPlatform)' == ''">Windows</XenkoPlatform>
   </PropertyGroup>
 
-  <!-- If not set, Android executable doesn't work properly because ResolveNuGetPackageAssets has no NuGetRuntimeIdentifier and use only the ref assemblies -->
-  <PropertyGroup Condition="'$(XenkoPlatform)' == 'Android' And '$(AndroidApplication)' == 'true'">
-    <RuntimeIdentifier>win</RuntimeIdentifier>
-    <NuGetRuntimeIdentifier>win</NuGetRuntimeIdentifier>
-  </PropertyGroup>
+  <Target Name="_XenkoFixupPackageReferences" AfterTargets="ResolveNuGetPackageAssets" Condition="'$(XenkoPlatform)' == 'UWP' Or '$(XenkoPlatform)' == 'Android' Or '$(XenkoPlatform)' == 'iOS'">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths2 Include="@(ReferenceCopyLocalPaths)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', 'runtimes\\win(-\w*)?\\lib\\netstandard2.0\\'))">
+        <UpdatedPath Condition="'$(XenkoPlatform)' == 'UWP'">$([System.Text.RegularExpressions.Regex]::Replace('%(Identity)', 'runtimes\\win(-\w*)?\\lib\\netstandard2.0\\', 'lib\uap10.0.16299\'))</UpdatedPath>
+        <UpdatedPath Condition="'$(XenkoPlatform)' == 'Android'">$([System.Text.RegularExpressions.Regex]::Replace('%(Identity)', 'runtimes\\win(-\w*)?\\lib\\netstandard2.0\\', 'lib\monoandroid50\'))</UpdatedPath>
+        <UpdatedPath Condition="'$(XenkoPlatform)' == 'iOS'">$([System.Text.RegularExpressions.Regex]::Replace('%(Identity)', 'runtimes\\win(-\w*)?\\lib\\netstandard2.0\\', 'lib\xamarinios10\'))</UpdatedPath>
+      </ReferenceCopyLocalPaths2>
+      <ReferenceCopyLocalPaths2 Include="@(ReferenceCopyLocalPaths)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', '\\ref\\'))">
+        <UpdatedPath>$([System.Text.RegularExpressions.Regex]::Replace('%(Identity)', '\\ref\\', '\lib\'))</UpdatedPath>
+      </ReferenceCopyLocalPaths2>
+      <ReferenceCopyLocalPaths2 Remove="@(ReferenceCopyLocalPaths2)" Condition="!Exists('%(ReferenceCopyLocalPaths2.UpdatedPath)')"/>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths2)"/>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths2->'%(UpdatedPath)')" RemoveMetadata="UpdatedPath"/>
+    </ItemGroup>
+  </Target>
 
   <!-- 
   *****************************************************************************************************************************
