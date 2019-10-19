@@ -19,7 +19,7 @@ namespace Xenko.LauncherApp.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Strings {
@@ -106,6 +106,15 @@ namespace Xenko.LauncherApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chat with us.
+        /// </summary>
+        public static string ButtonDiscord {
+            get {
+                return ResourceManager.GetString("ButtonDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discuss about Xenko.
         /// </summary>
         public static string ButtonForums {
@@ -120,15 +129,6 @@ namespace Xenko.LauncherApp.Resources {
         public static string ButtonGithub {
             get {
                 return ResourceManager.GetString("ButtonGithub", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat with us.
-        /// </summary>
-        public static string ButtonGitter {
-            get {
-                return ResourceManager.GetString("ButtonGitter", resourceCulture);
             }
         }
         
@@ -309,6 +309,15 @@ namespace Xenko.LauncherApp.Resources {
         public static string InstallLatestVersion {
             get {
                 return ResourceManager.GetString("InstallLatestVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install {0}.
+        /// </summary>
+        public static string InstallVersion {
+            get {
+                return ResourceManager.GetString("InstallVersion", resourceCulture);
             }
         }
         
@@ -606,6 +615,15 @@ namespace Xenko.LauncherApp.Resources {
         public static string ToolTipOpenAndUpgradeProject {
             get {
                 return ResourceManager.GetString("ToolTipOpenAndUpgradeProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &apos;{0}&apos;.
+        /// </summary>
+        public static string ToolTipOpenLink {
+            get {
+                return ResourceManager.GetString("ToolTipOpenLink", resourceCulture);
             }
         }
         

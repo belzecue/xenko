@@ -23,21 +23,23 @@
       <BitmapImage x:Key="ImageVisualStudio" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/visual-studio.png"/>
       <BitmapImage x:Key="ImageProjects" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/recent-projects.png"/>
       <BitmapImage x:Key="ImageGithub" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/github.png"/>
-      <BitmapImage x:Key="ImageAnswerhub" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/answerhub.png"/>
       <BitmapImage x:Key="ImageIssues" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/issues.png"/>
       <BitmapImage x:Key="ImageForums" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/chat-16.png"/>
-      <BitmapImage x:Key="ImageChat" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/gitter.png"/>
+      <BitmapImage x:Key="ImageChat" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/discord.png"/>
       <BitmapImage x:Key="ImageShowcase" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/showcase.png"/>
       <BitmapImage x:Key="ImageRoadmap" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/roadmap.png"/>
       <BitmapImage x:Key="ImageSurvey" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/survey.png"/>
       <BitmapImage x:Key="ImageTwitter" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/twitter_bird_24.png"/>
       <BitmapImage x:Key="ImageFacebook" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/facebook_24.png"/>
       <BitmapImage x:Key="ImageReddit" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/reddit_24.png"/>
+      <BitmapImage x:Key="ImagePatreon" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/patreon_mark_coral_24.png"/>
+      
       <BitmapImage x:Key="ImageDownload" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/download-26-dark.png"/>
       <BitmapImage x:Key="ImageUpdate" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/update.png"/>
       <BitmapImage x:Key="ImageDelete" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/delete-26-dark.png"/>
       <BitmapImage x:Key="ImageUpgrade" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/upgrade-16.png"/>
       <BitmapImage x:Key="ImageReleaseNotes" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/note-26-dark.png"/>
+      <BitmapImage x:Key="ImageListVersions" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/list-26.png"/>
       <BitmapImage x:Key="ImageBackground" UriSource="pack://application:,,,/Xenko.Launcher;component/Resources/Robot.jpg"/>
 
       <s:Double x:Key="ReleaseNotesMargin">20</s:Double>
@@ -49,6 +51,8 @@
       <SolidColorBrush x:Key="TileAlphaBackgroundBrush" Color="#C0434343"/>
       <SolidColorBrush x:Key="EmphasisButtonBackground" Color="#900520"/>
       <Color x:Key="EmphasisButtonHoverColor">#DA0830</Color>
+
+      <Style TargetType="{x:Type l:StaysOpenContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}"/>
 
       <DataTemplate DataType="{x:Type vm:XenkoDevVersionViewModel}">
         <DockPanel Margin="0,2" Height="32" SnapsToDevicePixels="True" Background="{StaticResource TileAlphaBackgroundBrush}"
@@ -76,6 +80,10 @@
             </Button>
           </Grid>
         </DockPanel>
+      </DataTemplate>
+
+      <DataTemplate DataType="{x:Type vm:XenkoStoreAlternateVersionViewModel}">
+        <TextBlock Text="ASD" />
       </DataTemplate>
 
       <DataTemplate DataType="{x:Type vm:XenkoStoreVersionViewModel}">
@@ -116,6 +124,34 @@
                                                        DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
               </i:Interaction.Behaviors>
             </Button>
+            <!-- ALTERNATE VERSIONS -->
+            <ToggleButton x:Name="Toggle" Content="{sskk:Image {StaticResource ImageListVersions}, 20, 20}" Width="32" Height="32"
+                ToolTipService.IsEnabled="False" ToolTip="Install another version" Margin="4,0,0,0"/>
+            <Popup IsOpen="{Binding IsChecked, ElementName=Toggle, Mode=TwoWay}" StaysOpen="False" AllowsTransparency="True">
+              <Border Margin="6" Background="{StaticResource ControlBackgroundBrush}"
+                BorderBrush="{StaticResource NormalBrush}" BorderThickness="1">
+                <Border.Effect>
+                  <DropShadowEffect BlurRadius="5" Opacity="0.4"/>
+                </Border.Effect>
+                <Menu ItemsSource="{Binding AlternateVersions}">
+                  <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                  </Menu.ItemsPanel>
+                  <Menu.ItemTemplate>
+                    <DataTemplate>
+                      <MenuItem Header="{Binding FullName, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipSetActiveVersion}}"
+                                Command="{Binding SetAsActiveCommand}">
+                        <i:Interaction.Behaviors>
+                          <sskk:OnEventSetPropertyBehavior EventName="Click" EventOwnerType="MenuItem" Target="{Binding ElementName=Toggle}" Property="ToggleButton.IsChecked" Value="{sskk:False}" />
+                        </i:Interaction.Behaviors>
+                      </MenuItem>
+                    </DataTemplate>
+                  </Menu.ItemTemplate>
+                </Menu>
+              </Border>
+            </Popup>
           </StackPanel>
           <!-- RELEASE NOTES BUTTON -->
           <Button Content="{sskk:Image {StaticResource ImageReleaseNotes}, 20, 20}" Width="32" Height="32"
@@ -260,19 +296,48 @@
               <DockPanel Margin="10">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Margin="10">
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
-                        Command="{Binding OpenUrlCommand}"
+                        Command="{Binding OpenUrlCommand}" 
                         CommandParameter="{x:Static r:Urls.Twitter}" SnapsToDevicePixels="True" Margin="2"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}"
                         Content="{sskk:Image {StaticResource ImageTwitter}, 24, 24, NearestNeighbor}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
                         CommandParameter="{x:Static r:Urls.Facebook}" SnapsToDevicePixels="True" Margin="2"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}"
                         Content="{sskk:Image {StaticResource ImageFacebook}, 24, 24, NearestNeighbor}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
                         CommandParameter="{x:Static r:Urls.Reddit}" SnapsToDevicePixels="True" Margin="2"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}"
                         Content="{sskk:Image {StaticResource ImageReddit}, 24, 24, NearestNeighbor}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
+                  </Button>
+                  <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
+                        Command="{Binding OpenUrlCommand}"
+                        CommandParameter="{x:Static r:Urls.Patreon}" SnapsToDevicePixels="True" Margin="2"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}"
+                        Content="{sskk:Image {StaticResource ImagePatreon}, 24, 24, NearestNeighbor}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                   </Button>
                   <!--<Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
@@ -293,7 +358,13 @@
                 <UniformGrid Columns="2">
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Issues}">
+                        CommandParameter="{x:Static r:Urls.Issues}"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                     <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
                       <Image Margin="5" Source="{StaticResource ImageIssues}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                       <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonIssues}" VerticalAlignment="Center"/>
@@ -301,7 +372,13 @@
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Forums}">
+                        CommandParameter="{x:Static r:Urls.Forums}"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                     <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
                       <Image Margin="5" Source="{StaticResource ImageForums}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                       <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonForums}" VerticalAlignment="Center"/>
@@ -309,23 +386,27 @@
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Answers}">
-                    <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
-                      <Image Margin="5" Source="{StaticResource ImageAnswerhub}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
-                      <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonAnswers}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                  </Button>
-                  <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
-                        Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Gitter}">
+                        CommandParameter="{x:Static r:Urls.Discord}"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                     <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
                       <Image Margin="5" Source="{StaticResource ImageChat}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
-                      <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonGitter}" VerticalAlignment="Center"/>
+                      <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonDiscord}" VerticalAlignment="Center"/>
                     </StackPanel>
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Github}">
+                        CommandParameter="{x:Static r:Urls.Github}"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                     <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
                       <Image Margin="5" Source="{StaticResource ImageGithub}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                       <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonGithub}" VerticalAlignment="Center"/>
@@ -333,7 +414,13 @@
                   </Button>
                   <Button Style="{StaticResource TransparentButtonStyle}" HorizontalAlignment="Left"
                         Command="{Binding OpenUrlCommand}"
-                        CommandParameter="{x:Static r:Urls.Roadmap}">
+                        CommandParameter="{x:Static r:Urls.Roadmap}"
+                        ToolTipService.IsEnabled="False"
+                        ToolTip="{Binding CommandParameter, RelativeSource={RelativeSource Self}, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipOpenLink}}">
+                    <i:Interaction.Behaviors>
+                      <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                     DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                    </i:Interaction.Behaviors>
                     <StackPanel Orientation="Horizontal" SnapsToDevicePixels="True">
                       <Image Margin="5" Source="{StaticResource ImageRoadmap}" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="16" Height="16"/>
                       <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="{x:Static r:Strings.ButtonRoadmap}" VerticalAlignment="Center"/>
@@ -346,12 +433,13 @@
               <Border BorderBrush="{StaticResource TileBorderBrush}" BorderThickness="{StaticResource TileBorderThickness}" DockPanel.Dock="Top">
                 <StackPanel>
                   <Grid Height="48">
+                    <!-- Launch game studio -->
                     <Button IsEnabled="{sskk:MultiBinding {Binding ActiveVersion.IsProcessing, Converter={sskk:InvertBool}},
                           {Binding StartStudioCommand.IsEnabled}, Converter={sskk:AndMultiConverter}}"
                           Command="{Binding StartStudioCommand}" Content="{Binding ActiveVersion.FullName}"
                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextBlock.FontSize="24"
                           ContentStringFormat="{x:Static r:Strings.StartVersion}" Background="{StaticResource EmphasisButtonBackground}" ToolTipService.IsEnabled="False"
-                          Visibility="{Binding ActiveVersion, Converter={sskk:Chained {sskk:ObjectToBool}, {sskk:VisibleOrCollapsed}}}"
+                          Visibility="{Binding ActiveVersion.CanStart, Converter={sskk:VisibleOrCollapsed}}"
                           ToolTip="{Binding ActiveVersion.FullName, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipStartButton}}">
                       <Button.Resources>
                         <!-- ReSharper disable once Xaml.RedundantResource - Overriding hovered color from theme-->
@@ -362,6 +450,24 @@
                                                                                DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
                       </i:Interaction.Behaviors>
                     </Button>
+                    <!-- Install specific version -->
+                    <Button IsEnabled="{sskk:MultiBinding {Binding ActiveVersion.IsProcessing, Converter={sskk:InvertBool}},
+                          {Binding ActiveVersion.DownloadCommand.IsEnabled}, Converter={sskk:AndMultiConverter}}"
+                          Command="{Binding ActiveVersion.DownloadCommand}" Content="{Binding ActiveVersion.FullName}"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextBlock.FontSize="24"
+                          ContentStringFormat="{x:Static r:Strings.InstallVersion}" Background="{StaticResource EmphasisButtonBackground}" ToolTipService.IsEnabled="False"
+                          Visibility="{sskk:MultiBinding {Binding ActiveVersion.DownloadCommand.IsEnabled}, {Binding ActiveVersion.CanStart, Converter={sskk:InvertBool}}, Converter={sskk:MultiChained {sskk:AndMultiConverter}, {sskk:VisibleOrCollapsed}}}"
+                          ToolTip="{Binding ActiveVersion.FullName, Converter={sskk:FormatString}, ConverterParameter={x:Static r:Strings.ToolTipDownload}}">
+                      <Button.Resources>
+                        <!-- ReSharper disable once Xaml.RedundantResource - Overriding hovered color from theme-->
+                        <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="{StaticResource EmphasisButtonHoverColor}"/>
+                      </Button.Resources>
+                      <i:Interaction.Behaviors>
+                        <sskk:BindCurrentToolTipStringBehavior ToolTipTarget="{Binding CurrentToolTip}"
+                                                                               DefaultValue="{x:Static r:Strings.ToolTipDefault}"/>
+                      </i:Interaction.Behaviors>
+                    </Button>
+                    <!-- Install latest version (nothing installed) -->
                     <Button IsEnabled="{sskk:MultiBinding {Binding IsSynchronizing, Converter={sskk:InvertBool}},
                           {Binding InstallLatestVersionCommand.IsEnabled}, Converter={sskk:AndMultiConverter}}"
                           Command="{Binding InstallLatestVersionCommand}" Content="{x:Static r:Strings.InstallLatestVersion}"

@@ -47,7 +47,9 @@ namespace Xenko.Assets.Presentation.SceneEditor
                 var isHighlighted =
                     MaterialHighlightColors.TryGetValue(renderMesh.MaterialPass.Material, out highlightColor) ||
                     MeshHighlightColors.TryGetValue(renderMesh.Mesh, out highlightColor) ||
-                    MaterialsHighlightedForModel.Contains(renderMesh.MaterialPass.Material) && ModelHighlightColors.TryGetValue(renderMesh.RenderModel.ModelComponent, out highlightColor);
+                    (MaterialsHighlightedForModel.Contains(renderMesh.MaterialPass.Material)
+                     && renderMesh.Source is ModelComponent component
+                     && ModelHighlightColors.TryGetValue(component, out highlightColor));
 
                 renderModelObjectInfo[objectNodeReference] = highlightColor;
             }
@@ -60,7 +62,7 @@ namespace Xenko.Assets.Presentation.SceneEditor
 
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
-                var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
+                var perDrawLayout = renderNode.RenderEffect.Reflection?.PerDrawLayout;
                 if (perDrawLayout == null)
                     continue;
 
@@ -81,7 +83,7 @@ namespace Xenko.Assets.Presentation.SceneEditor
             base.ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
 
             // Check if this is a highlight rendering
-            var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
+            var perDrawLayout = renderNode.RenderEffect.Reflection?.PerDrawLayout;
             if (perDrawLayout == null)
                 return;
 
